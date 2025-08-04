@@ -35,10 +35,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-
-
     // ===== ANIMAÇÃO DE CONTADORES =====
-    const statNumbers = document.querySelectorAll('.stat-number');
+    const statNumbers = document.querySelectorAll('.stat-number[data-target]');
     
     function animateCounter(element) {
         const target = parseInt(element.getAttribute('data-target'));
@@ -271,7 +269,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ===== EFEITOS DE HOVER NOS SERVIÇOS =====
     const serviceCards = document.querySelectorAll('.service-card');
-    
     serviceCards.forEach(card => {
         card.addEventListener('mouseenter', function() {
             this.style.transform = 'translateY(-10px) scale(1.02)';
@@ -431,6 +428,122 @@ document.addEventListener('DOMContentLoaded', function() {
             existingError.remove();
         }
     }
+
+    // ===== MODAIS DE SERVIÇOS =====
+    const serviceModals = {
+        webDev: {
+            modal: document.getElementById('webDevModal'),
+            close: document.getElementById('webDevModalClose'),
+            overlay: document.getElementById('webDevModalOverlay')
+        },
+        mobileDev: {
+            modal: document.getElementById('mobileDevModal'),
+            close: document.getElementById('mobileDevModalClose'),
+            overlay: document.getElementById('mobileDevModalOverlay')
+        },
+        cloud: {
+            modal: document.getElementById('cloudModal'),
+            close: document.getElementById('cloudModalClose'),
+            overlay: document.getElementById('cloudModalOverlay')
+        },
+        network: {
+            modal: document.getElementById('networkModal'),
+            close: document.getElementById('networkModalClose'),
+            overlay: document.getElementById('networkModalOverlay')
+        },
+        security: {
+            modal: document.getElementById('securityModal'),
+            close: document.getElementById('securityModalClose'),
+            overlay: document.getElementById('securityModalOverlay')
+        },
+        maintenance: {
+            modal: document.getElementById('maintenanceModal'),
+            close: document.getElementById('maintenanceModalClose'),
+            overlay: document.getElementById('maintenanceModalOverlay')
+        }
+    };
+
+    function openServiceModal(modalId) {
+        const modal = serviceModals[modalId].modal;
+        if (modal) {
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            // Anima os elementos do modal
+            setTimeout(() => {
+                const modalElements = modal.querySelectorAll('.modal-element');
+                modalElements.forEach((element, index) => {
+                    setTimeout(() => {
+                        element.classList.add('animate-in');
+                    }, index * 150);
+                });
+            }, 100);
+        }
+    }
+
+    function closeServiceModal(modalId) {
+        const modal = serviceModals[modalId].modal;
+        if (modal) {
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+            
+            // Remove animações
+            const modalElements = modal.querySelectorAll('.modal-element');
+            modalElements.forEach(element => {
+                element.classList.remove('animate-in');
+            });
+        }
+    }
+
+    // Event listeners para os cards de serviços
+    serviceCards.forEach((card, index) => {
+        card.style.cursor = 'pointer';
+        card.addEventListener('click', () => {
+            const modalIds = ['webDev', 'mobileDev', 'cloud', 'network', 'security', 'maintenance'];
+            if (modalIds[index]) {
+                openServiceModal(modalIds[index]);
+            }
+        });
+    });
+
+    // Event listeners específicos para os links "Saiba mais"
+    const serviceLinks = document.querySelectorAll('.service-link');
+    serviceLinks.forEach((link, index) => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault(); // Previne o comportamento padrão do link
+            e.stopPropagation(); // Previne a propagação do evento para o card pai
+            
+            const modalIds = ['webDev', 'mobileDev', 'cloud', 'network', 'security', 'maintenance'];
+            if (modalIds[index]) {
+                openServiceModal(modalIds[index]);
+            }
+        });
+    });
+
+    // Event listeners para fechar modais
+    Object.keys(serviceModals).forEach(modalId => {
+        const modalData = serviceModals[modalId];
+        
+        if (modalData.close) {
+            modalData.close.addEventListener('click', () => closeServiceModal(modalId));
+        }
+        
+        if (modalData.overlay) {
+            modalData.overlay.addEventListener('click', () => closeServiceModal(modalId));
+        }
+    });
+
+    // Fechar modais com tecla ESC
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            Object.keys(serviceModals).forEach(modalId => {
+                const modal = serviceModals[modalId].modal;
+                if (modal && modal.classList.contains('active')) {
+                    closeServiceModal(modalId);
+                }
+            });
+        }
+    });
 
     // ===== PERFORMANCE OPTIMIZATION =====
     // Debounce para eventos de scroll
