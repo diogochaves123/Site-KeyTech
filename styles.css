@@ -417,6 +417,28 @@ body {
     color: var(--light-color);
 }
 
+.service-image {
+    width: 100%;
+    height: 200px;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: var(--transition-medium);
+}
+
+.service-image:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.service-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: var(--transition-medium);
+}
+
 .service-card h3 {
     font-size: 1.5rem;
     font-weight: 600;
@@ -442,6 +464,18 @@ body {
 
 .service-link:hover {
     gap: 1rem;
+}
+
+/* Estilo para os botões de CTA nos widgets principais */
+.service-card .service-cta {
+    display: flex;
+    justify-content: center;
+    margin-top: 1.5rem;
+}
+
+.service-card .service-cta .btn-primary {
+    width: 100%;
+    max-width: 200px;
 }
 
 /* Featured Section */
@@ -1080,6 +1114,10 @@ body {
     
     .service-card {
         padding: 2rem;
+    }
+    
+    .service-image {
+        height: 150px;
     }
     
     .chat-panel {
