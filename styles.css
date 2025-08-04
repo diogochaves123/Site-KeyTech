@@ -1101,6 +1101,11 @@ body {
         height: 300px;
     }
     
+    .circuit-board {
+        width: 250px;
+        height: 250px;
+    }
+    
     .featured-content,
     .about-content,
     .contact-content {
@@ -1166,6 +1171,15 @@ body {
     
     .service-image {
         height: 150px;
+    }
+    
+    .hero-visual {
+        height: 250px;
+    }
+    
+    .circuit-board {
+        width: 200px;
+        height: 200px;
     }
     
     .chat-panel {
