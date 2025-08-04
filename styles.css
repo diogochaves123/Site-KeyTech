@@ -1009,6 +1009,36 @@ body {
     background: var(--primary-light);
 }
 
+/* Chat Options */
+.chat-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+.chat-option {
+    background: var(--primary-color);
+    color: var(--light-color);
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    font-size: 0.9rem;
+    text-align: left;
+    font-weight: 500;
+}
+
+.chat-option:hover {
+    background: var(--primary-light);
+    transform: translateX(5px);
+}
+
+.chat-option:active {
+    transform: scale(0.98);
+}
+
 /* Scroll to Top Button */
 .scroll-top {
     position: fixed;
@@ -1093,6 +1123,15 @@ body {
         right: -50px;
     }
     
+    .chat-options {
+        gap: 0.4rem;
+    }
+    
+    .chat-option {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
+    }
+    
     .scroll-top {
         left: 1rem;
         bottom: 1rem;
@@ -1123,6 +1162,15 @@ body {
     .chat-panel {
         width: 280px;
         right: -80px;
+    }
+    
+    .chat-options {
+        gap: 0.3rem;
+    }
+    
+    .chat-option {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.8rem;
     }
 }
 

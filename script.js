@@ -113,12 +113,71 @@ document.addEventListener('DOMContentLoaded', function() {
     const chatSend = document.getElementById('chatSend');
     const chatMessages = document.getElementById('chatMessages');
 
+    // Base de conhecimento do chat
+    const chatKnowledge = {
+        services: {
+            'desenvolvimento web': {
+                keywords: ['site', 'website', 'web', 'desenvolvimento web', 'landing page', 'e-commerce'],
+                response: 'Perfeito! Desenvolvemos sites modernos e responsivos. Que tipo de site você precisa?',
+                options: ['Site Institucional', 'E-commerce', 'Landing Page', 'Sistema Web', 'Falar com Especialista']
+            },
+            'aplicativos mobile': {
+                keywords: ['app', 'aplicativo', 'mobile', 'android', 'ios', 'celular'],
+                response: 'Excelente! Criamos aplicativos nativos e híbridos. Que tipo de app você tem em mente?',
+                options: ['App de Vendas', 'App Empresarial', 'App de Entrega', 'App Personalizado', 'Falar com Especialista']
+            },
+            'cloud computing': {
+                keywords: ['nuvem', 'cloud', 'servidor', 'hosting', 'aws', 'azure'],
+                response: 'Ótimo! Oferecemos soluções em nuvem escaláveis. Como posso ajudar?',
+                options: ['Migração para Nuvem', 'Backup na Nuvem', 'Servidores Cloud', 'Otimização de Custos', 'Falar com Especialista']
+            },
+            'infraestrutura de redes': {
+                keywords: ['rede', 'redes', 'internet', 'wi-fi', 'roteador', 'switch'],
+                response: 'Perfeito! Implementamos infraestruturas de rede robustas. Qual sua necessidade?',
+                options: ['Projeto de Rede', 'Configuração de Equipamentos', 'Suporte Técnico', 'Monitoramento', 'Falar com Especialista']
+            },
+            'segurança de redes': {
+                keywords: ['segurança', 'firewall', 'vpn', 'proteção', 'cybersecurity'],
+                response: 'Excelente! Protegemos suas redes contra ameaças. Que tipo de proteção você precisa?',
+                options: ['Firewall', 'VPN', 'Backup de Segurança', 'Auditoria', 'Falar com Especialista']
+            },
+            'manutenção técnica': {
+                keywords: ['manutenção', 'computador', 'notebook', 'hardware', 'reparo', 'limpeza'],
+                response: 'Perfeito! Oferecemos manutenção técnica completa. Como posso ajudar?',
+                options: ['Manutenção de PC', 'Reparo de Notebook', 'Limpeza', 'Recuperação de Dados', 'Falar com Especialista']
+            }
+        },
+        general: {
+            'orcamento': {
+                keywords: ['orcamento', 'preço', 'valor', 'quanto custa', 'precificação'],
+                response: 'Claro! Vou te ajudar com um orçamento personalizado. Que serviço você tem interesse?',
+                action: 'whatsapp'
+            },
+            'contato': {
+                keywords: ['contato', 'falar', 'telefone', 'whatsapp', 'email'],
+                response: 'Perfeito! Aqui estão nossas formas de contato:',
+                action: 'contact_info'
+            },
+            'sobre': {
+                keywords: ['sobre', 'empresa', 'quem somos', 'história', 'equipe'],
+                response: 'Somos a KeyTech, especialistas em soluções tecnológicas inovadoras. Que tal conhecer mais sobre nós?',
+                action: 'about_info'
+            }
+        }
+    };
+
     // Toggle do chat
     if (chatButton) {
         chatButton.addEventListener('click', function() {
             chatPanel.classList.toggle('active');
             if (chatPanel.classList.contains('active')) {
                 chatInput.focus();
+                // Adiciona mensagem de boas-vindas se for a primeira vez
+                if (chatMessages.children.length <= 1) {
+                    setTimeout(() => {
+                        addWelcomeMessage();
+                    }, 500);
+                }
             }
         });
     }
@@ -129,6 +188,105 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Mensagem de boas-vindas
+    function addWelcomeMessage() {
+        const welcomeMessage = `
+            <div class="message bot">
+                <p>Olá! 👋 Sou o assistente virtual da KeyTech. Como posso ajudar você hoje?</p>
+                <div class="chat-options">
+                    <button class="chat-option" data-service="orcamento">📋 Solicitar Orçamento</button>
+                    <button class="chat-option" data-service="desenvolvimento web">🌐 Desenvolvimento Web</button>
+                    <button class="chat-option" data-service="aplicativos mobile">📱 Aplicativos Mobile</button>
+                    <button class="chat-option" data-service="cloud computing">☁️ Cloud Computing</button>
+                    <button class="chat-option" data-service="infraestrutura de redes">🌐 Infraestrutura de Redes</button>
+                    <button class="chat-option" data-service="segurança de redes">🔒 Segurança de Redes</button>
+                    <button class="chat-option" data-service="manutenção técnica">🔧 Manutenção Técnica</button>
+                </div>
+            </div>
+        `;
+        chatMessages.insertAdjacentHTML('beforeend', welcomeMessage);
+        
+        // Adiciona event listeners aos botões
+        const options = chatMessages.querySelectorAll('.chat-option');
+        options.forEach(option => {
+            option.addEventListener('click', function() {
+                const service = this.getAttribute('data-service');
+                handleServiceSelection(service);
+            });
+        });
+    }
+
+    // Processa seleção de serviço
+    function handleServiceSelection(service) {
+        // Adiciona a seleção do usuário
+        addMessage(service, 'user');
+        
+        setTimeout(() => {
+            if (service === 'orcamento') {
+                addMessage('Perfeito! Vou te conectar com nossa equipe para um orçamento personalizado. 🚀', 'bot');
+                setTimeout(() => {
+                    addMessage('Abrindo WhatsApp...', 'bot');
+                    setTimeout(() => {
+                        openWhatsAppWithMessage();
+                    }, 1000);
+                }, 1500);
+            } else if (chatKnowledge.services[service]) {
+                const serviceInfo = chatKnowledge.services[service];
+                addMessage(serviceInfo.response, 'bot');
+                
+                // Adiciona opções específicas do serviço
+                setTimeout(() => {
+                    const optionsHTML = serviceInfo.options.map(option => 
+                        `<button class="chat-option" data-action="${option.toLowerCase()}">${option}</button>`
+                    ).join('');
+                    
+                    const optionsMessage = `
+                        <div class="message bot">
+                            <div class="chat-options">
+                                ${optionsHTML}
+                            </div>
+                        </div>
+                    `;
+                    chatMessages.insertAdjacentHTML('beforeend', optionsMessage);
+                    
+                    // Adiciona event listeners
+                    const newOptions = chatMessages.querySelectorAll('.chat-option');
+                    newOptions.forEach(option => {
+                        option.addEventListener('click', function() {
+                            const action = this.getAttribute('data-action');
+                            handleActionSelection(action, service);
+                        });
+                    });
+                }, 1000);
+            }
+        }, 500);
+    }
+
+    // Processa ações específicas
+    function handleActionSelection(action, service) {
+        addMessage(action, 'user');
+        
+        setTimeout(() => {
+            if (action.includes('falar com especialista')) {
+                addMessage('Perfeito! Vou te conectar com nosso especialista em ' + service + '. 📞', 'bot');
+                setTimeout(() => {
+                    addMessage('Abrindo WhatsApp...', 'bot');
+                    setTimeout(() => {
+                        openWhatsAppWithMessage();
+                    }, 1000);
+                }, 1500);
+            } else {
+                addMessage('Excelente escolha! Vou te conectar com nossa equipe para detalhar sobre ' + action + '. 🚀', 'bot');
+                setTimeout(() => {
+                    addMessage('Abrindo WhatsApp...', 'bot');
+                    setTimeout(() => {
+                        openWhatsAppWithMessage();
+                    }, 1000);
+                }, 1500);
+            }
+        }, 500);
+    }
+
     // Envio de mensagem no chat
     function sendMessage() {
         const message = chatInput.value.trim();
@@ -137,16 +295,59 @@ document.addEventListener('DOMContentLoaded', function() {
             addMessage(message, 'user');
             chatInput.value = '';
             
-            // Simula resposta do bot
+            // Processa a mensagem
             setTimeout(() => {
-                const responses = [
-                    "Obrigado pelo seu contato! Nossa equipe entrará em contato em breve.",
-                    "Interessante! Posso ajudar você com mais informações sobre nossos serviços.",
-                    "Perfeito! Vou encaminhar sua solicitação para nossa equipe especializada.",
-                    "Entendi sua necessidade. Temos a solução ideal para você!"
-                ];
-                const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-                addMessage(randomResponse, 'bot');
+                processUserMessage(message.toLowerCase());
+            }, 500);
+        }
+    }
+
+    // Processa mensagem do usuário
+    function processUserMessage(message) {
+        let response = null;
+        let action = null;
+        
+        // Verifica serviços
+        for (const [service, info] of Object.entries(chatKnowledge.services)) {
+            if (info.keywords.some(keyword => message.includes(keyword))) {
+                response = info.response;
+                break;
+            }
+        }
+        
+        // Verifica intenções gerais
+        if (!response) {
+            for (const [intent, info] of Object.entries(chatKnowledge.general)) {
+                if (info.keywords.some(keyword => message.includes(keyword))) {
+                    response = info.response;
+                    action = info.action;
+                    break;
+                }
+            }
+        }
+        
+        // Resposta padrão se não encontrou nada específico
+        if (!response) {
+            response = 'Interessante! Posso te ajudar com nossos serviços. Que tal começar com uma opção?';
+        }
+        
+        addMessage(response, 'bot');
+        
+        // Executa ação se necessário
+        if (action === 'whatsapp') {
+            setTimeout(() => {
+                addMessage('Vou te conectar com nossa equipe via WhatsApp! 📱', 'bot');
+                setTimeout(() => {
+                    openWhatsAppWithMessage();
+                }, 1500);
+            }, 1000);
+        } else if (action === 'contact_info') {
+            setTimeout(() => {
+                addMessage('📧 Email: keytech.suporte@gmail.com\n📞 WhatsApp: (54) 991407787\n📍 Soledade, RS', 'bot');
+            }, 1000);
+        } else if (action === 'about_info') {
+            setTimeout(() => {
+                addMessage('Somos especialistas em tecnologia com foco em inovação e resultados. Nossa equipe é liderada por Diogo Vaz de Chaves, CEO com experiência em desenvolvimento e gestão de projetos. 🚀', 'bot');
             }, 1000);
         }
     }
@@ -565,6 +766,155 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 16);
 
     window.addEventListener('scroll', debouncedScrollHandler);
+
+    // ===== FUNÇÃO PARA ABRIR WHATSAPP COM MENSAGEM PERSONALIZADA =====
+    function openWhatsAppWithMessage() {
+        const now = new Date();
+        const hour = now.getHours();
+        
+        let greeting = '';
+        if (hour >= 5 && hour < 12) {
+            greeting = 'Bom dia, gostaria de solicitar um orcamento!';
+        } else if (hour >= 12 && hour < 18) {
+            greeting = 'Boa tarde, gostaria de solicitar um orcamento!';
+        } else {
+            greeting = 'Boa noite, gostaria de solicitar um orcamento!';
+        }
+        
+        // Formato correto do número para WhatsApp (código do país + DDD + número)
+        const phoneNumber = '5554991407787'; // 55 (Brasil) + 54 (DDD) + 991407787
+        
+        // Alternativa: formato sem o código do país (pode funcionar em alguns casos)
+        // const phoneNumber = '54991407787';
+        
+        // Codifica a mensagem corretamente para URL
+        const message = encodeURIComponent(greeting);
+        const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
+        
+        // URL alternativa para teste (sem codificação)
+        const whatsappUrlSimple = `https://wa.me/${phoneNumber}?text=${greeting}`;
+        
+        console.log('Mensagem:', greeting);
+        console.log('WhatsApp URL (codificada):', whatsappUrl);
+        console.log('WhatsApp URL (simples):', whatsappUrlSimple);
+        
+        // Tenta abrir o WhatsApp com a versão simples primeiro
+        try {
+            window.open(whatsappUrlSimple, '_blank');
+        } catch (error) {
+            console.error('Erro com URL simples:', error);
+            try {
+                window.open(whatsappUrl, '_blank');
+            } catch (error2) {
+                console.error('Erro com URL codificada:', error2);
+                // Fallback: abre WhatsApp sem mensagem
+                window.open(`https://wa.me/${phoneNumber}`, '_blank');
+            }
+        }
+    }
+
+    // ===== FUNÇÃO DE TESTE PARA WHATSAPP =====
+    function testWhatsApp() {
+        const phoneNumber = '5554991407787';
+        const message = 'Teste de mensagem';
+        const encodedMessage = encodeURIComponent(message);
+        const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+        
+        console.log('Teste WhatsApp URL:', whatsappUrl);
+        window.open(whatsappUrl, '_blank');
+    }
+
+    // ===== BOTÕES "SOLICITAR ORÇAMENTO" NOS CARDS PRINCIPAIS =====
+    const serviceCtaButtons = document.querySelectorAll('.service-card .service-cta .btn-primary');
+    
+    serviceCtaButtons.forEach((button, index) => {
+        button.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation(); // Previne que o card pai seja clicado
+            openWhatsAppWithMessage();
+        });
+    });
+
+    // ===== BOTÕES "SOLICITAR ORÇAMENTO" NOS MODAIS =====
+    const modalCtaButtons = document.querySelectorAll('.service-modal .cta-buttons .btn-primary');
+    
+    modalCtaButtons.forEach((button, index) => {
+        button.addEventListener('click', (e) => {
+            e.preventDefault();
+            
+            // Fecha o modal atual
+            const currentModal = button.closest('.service-modal');
+            if (currentModal) {
+                currentModal.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+            
+            openWhatsAppWithMessage();
+        });
+    });
+
+    // ===== BOTÃO "SOLICITAR ORÇAMENTO" NO HEADER =====
+    const headerCtaButton = document.querySelector('.nav-actions .btn-primary');
+    
+    if (headerCtaButton) {
+        headerCtaButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            openWhatsAppWithMessage();
+        });
+    }
+
+    // ===== BOTÕES "SOLICITAR ORÇAMENTO" NA SEÇÃO CTA =====
+    const ctaSectionButtons = document.querySelectorAll('.cta .cta-buttons .btn-primary');
+    
+    ctaSectionButtons.forEach((button) => {
+        button.addEventListener('click', (e) => {
+            e.preventDefault();
+            openWhatsAppWithMessage();
+        });
+    });
+
+    // ===== BOTÃO "FALAR COM ESPECIALISTA" NA SEÇÃO CTA =====
+    const ctaSecondaryButtons = document.querySelectorAll('.cta .cta-buttons .btn-secondary');
+    
+    ctaSecondaryButtons.forEach((button) => {
+        button.addEventListener('click', (e) => {
+            e.preventDefault();
+            openWhatsAppWithMessage();
+        });
+    });
+
+    // ===== BOTÕES DO HERO =====
+    const heroButtons = document.querySelectorAll('.hero-buttons .btn-primary');
+    
+    heroButtons.forEach((button) => {
+        button.addEventListener('click', (e) => {
+            e.preventDefault();
+            
+            // "Começar Agora" - Abre WhatsApp com mensagem específica
+            openWhatsAppWithMessage();
+        });
+    });
+
+    // ===== BOTÃO "SAIBA MAIS" NO HERO =====
+    const heroSecondaryButtons = document.querySelectorAll('.hero-buttons .btn-secondary');
+    
+    heroSecondaryButtons.forEach((button) => {
+        button.addEventListener('click', (e) => {
+            e.preventDefault();
+            
+            // "Saiba Mais" - Scroll suave para a seção de serviços
+            const servicesSection = document.querySelector('#services');
+            if (servicesSection) {
+                const headerHeight = document.querySelector('.header').offsetHeight;
+                const targetPosition = servicesSection.offsetTop - headerHeight;
+                
+                window.scrollTo({
+                    top: targetPosition,
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
 
     console.log('KeyTech Website - JavaScript carregado com sucesso! 🚀');
 }); 
