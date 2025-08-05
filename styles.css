@@ -1282,6 +1282,8 @@ body {
     overflow-y: auto;
     box-shadow: var(--shadow-heavy);
     animation: modalSlideIn 0.3s ease;
+    /* Remove o padding padrão para que o header azul preencha toda a largura */
+    padding: 0;
 }
 
 .modal-header {
@@ -1456,6 +1458,9 @@ body {
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     /* Remove o padding padrão para que o header azul preencha toda a largura */
     padding: 0;
+    /* Garante que não há margens ou bordas que interfiram */
+    margin: 0;
+    border: none;
 }
 
 .service-modal.active .service-modal-content {
@@ -1475,6 +1480,13 @@ body {
     margin: 0;
     width: 100%;
     box-sizing: border-box;
+    /* Garante que o header se estenda até as bordas */
+    position: relative;
+    left: 0;
+    right: 0;
+    /* Força o preenchimento completo */
+    min-width: 100%;
+    max-width: 100%;
 }
 
 .service-modal .modal-header h2 {
@@ -1787,6 +1799,14 @@ body {
         max-height: 95vh;
     }
 
+    .service-modal .modal-header {
+        width: 100%;
+        min-width: 100%;
+        max-width: 100%;
+        margin: 0;
+        padding: 1.5rem;
+    }
+
     .service-modal-grid {
         grid-template-columns: 1fr;
         gap: 30px;
@@ -1815,6 +1835,15 @@ body {
         border-radius: 15px;
     }
 
+    .service-modal .modal-header {
+        width: 100%;
+        min-width: 100%;
+        max-width: 100%;
+        margin: 0;
+        padding: 1rem;
+        border-radius: 15px 15px 0 0;
+    }
+
     .service-cta {
         padding: 30px 20px;
     }
@@ -1829,23 +1858,19 @@ body {
 }
 
 /* ===== SCROLL PERSONALIZADO PARA MODAIS ===== */
+/* Esconde a barra de rolagem padrão */
 .service-modal-content {
-    /* Esconde a barra de rolagem padrão */
     scrollbar-width: none; /* Firefox */
     -ms-overflow-style: none; /* Internet Explorer 10+ */
+    /* Mantém o scroll funcional mas invisível */
+    overflow-y: auto;
+    /* Adiciona padding para compensar a barra de rolagem invisível */
+    padding-right: 5px;
 }
 
 /* Esconde a barra de rolagem no WebKit (Chrome, Safari, Edge) */
 .service-modal-content::-webkit-scrollbar {
     display: none;
-}
-
-/* Adiciona scroll personalizado */
-.service-modal-content {
-    /* Mantém o scroll funcional mas invisível */
-    overflow-y: auto;
-    /* Adiciona padding para compensar a barra de rolagem invisível */
-    padding-right: 5px;
 }
 
 /* Scroll suave para todos os modais */
@@ -2226,5 +2251,98 @@ body {
     .badge {
         padding: 0.5rem 1rem;
         font-size: 0.8rem;
+    }
+}
+
+/* ===== SCROLL SUAVE GLOBAL ===== */
+html {
+    scroll-behavior: smooth;
+}
+
+/* ===== DESTAQUE PARA ELEMENTOS DE SERVIÇO ===== */
+.service-card {
+    transition: all 0.3s ease;
+}
+
+.service-card.highlight {
+    transform: scale(1.05);
+    box-shadow: 0 10px 30px rgba(0, 123, 255, 0.3);
+    border: 2px solid var(--primary-color);
+}
+
+/* ===== NOTIFICAÇÕES ===== */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+    max-width: 400px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    border-left: 4px solid #007bff;
+}
+
+.notification.show {
+    transform: translateX(0);
+}
+
+.notification-content {
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.notification-message {
+    flex: 1;
+    color: #333;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.notification-close {
+    background: none;
+    border: none;
+    color: #666;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.notification-close:hover {
+    background: #f0f0f0;
+    color: #333;
+}
+
+.notification-success {
+    border-left-color: #28a745;
+}
+
+.notification-error {
+    border-left-color: #dc3545;
+}
+
+.notification-info {
+    border-left-color: #17a2b8;
+}
+
+/* Responsive para notificações */
+@media (max-width: 480px) {
+    .notification {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        max-width: none;
     }
 } 

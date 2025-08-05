@@ -272,7 +272,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 setTimeout(() => {
                     addMessage('Abrindo WhatsApp...', 'bot');
                     setTimeout(() => {
-                        openWhatsAppWithMessage();
+                        openWhatsAppWithSpecialistMessage();
                     }, 1000);
                 }, 1500);
             } else {
@@ -396,22 +396,100 @@ document.addEventListener('DOMContentLoaded', function() {
     const contactForm = document.getElementById('contactForm');
     
     if (contactForm) {
-        contactForm.addEventListener('submit', function(e) {
+        contactForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            // Simula envio do formulário
             const submitBtn = this.querySelector('button[type="submit"]');
             const originalText = submitBtn.textContent;
             
+            // Get form data
+            const formData = new FormData(this);
+            const data = {
+                name: formData.get('name'),
+                email: formData.get('email'),
+                company: formData.get('company'),
+                message: formData.get('message')
+            };
+            
+            // Update button state
             submitBtn.textContent = 'Enviando...';
             submitBtn.disabled = true;
             
-            setTimeout(() => {
-                alert('Mensagem enviada com sucesso! Entraremos em contato em breve.');
-                this.reset();
+            try {
+                // Send to API
+                const response = await fetch('/api/contact', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Success message
+                    showNotification(result.message, 'success');
+                    this.reset();
+                } else {
+                    // Error message
+                    showNotification(result.message || 'Erro ao enviar mensagem. Tente novamente.', 'error');
+                }
+                
+            } catch (error) {
+                console.error('Erro ao enviar formulário:', error);
+                showNotification('Erro de conexão. Verifique sua internet e tente novamente.', 'error');
+            } finally {
+                // Reset button state
                 submitBtn.textContent = originalText;
                 submitBtn.disabled = false;
-            }, 2000);
+            }
+        });
+    }
+    
+    // ===== FUNÇÃO PARA MOSTRAR NOTIFICAÇÕES =====
+    function showNotification(message, type = 'info') {
+        // Remove existing notifications
+        const existingNotifications = document.querySelectorAll('.notification');
+        existingNotifications.forEach(notification => notification.remove());
+        
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.innerHTML = `
+            <div class="notification-content">
+                <span class="notification-message">${message}</span>
+                <button class="notification-close">&times;</button>
+            </div>
+        `;
+        
+        // Add to page
+        document.body.appendChild(notification);
+        
+        // Show notification
+        setTimeout(() => {
+            notification.classList.add('show');
+        }, 100);
+        
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 300);
+        }, 5000);
+        
+        // Close button functionality
+        const closeBtn = notification.querySelector('.notification-close');
+        closeBtn.addEventListener('click', () => {
+            notification.classList.remove('show');
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 300);
         });
     }
 
@@ -532,6 +610,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     top: targetPosition,
                     behavior: 'smooth'
                 });
+                
+                // Adiciona um destaque visual temporário ao elemento de destino
+                if (targetId.includes('-')) { // Se for um link de serviço
+                    targetElement.classList.add('highlight');
+                    
+                    setTimeout(() => {
+                        targetElement.classList.remove('highlight');
+                    }, 1000);
+                }
             }
         });
     });
@@ -813,6 +900,40 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // ===== FUNÇÃO ESPECÍFICA PARA "FALAR COM ESPECIALISTA" =====
+    function openWhatsAppWithSpecialistMessage() {
+        // Formato correto do número para WhatsApp (código do país + DDD + número)
+        const phoneNumber = '5554991407787'; // 55 (Brasil) + 54 (DDD) + 991407787
+        
+        // Mensagem específica para "Falar com especialista"
+        const specialistMessage = 'Olá, queria falar com um especialista!';
+        
+        // Codifica a mensagem corretamente para URL
+        const message = encodeURIComponent(specialistMessage);
+        const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
+        
+        // URL alternativa para teste (sem codificação)
+        const whatsappUrlSimple = `https://wa.me/${phoneNumber}?text=${specialistMessage}`;
+        
+        console.log('Mensagem do Especialista:', specialistMessage);
+        console.log('WhatsApp URL (codificada):', whatsappUrl);
+        console.log('WhatsApp URL (simples):', whatsappUrlSimple);
+        
+        // Tenta abrir o WhatsApp com a versão simples primeiro
+        try {
+            window.open(whatsappUrlSimple, '_blank');
+        } catch (error) {
+            console.error('Erro com URL simples:', error);
+            try {
+                window.open(whatsappUrl, '_blank');
+            } catch (error2) {
+                console.error('Erro com URL codificada:', error2);
+                // Fallback: abre WhatsApp sem mensagem
+                window.open(`https://wa.me/${phoneNumber}`, '_blank');
+            }
+        }
+    }
+
     // ===== FUNÇÃO DE TESTE PARA WHATSAPP =====
     function testWhatsApp() {
         const phoneNumber = '5554991407787';
@@ -879,7 +1000,7 @@ document.addEventListener('DOMContentLoaded', function() {
     ctaSecondaryButtons.forEach((button) => {
         button.addEventListener('click', (e) => {
             e.preventDefault();
-            openWhatsAppWithMessage();
+            openWhatsAppWithSpecialistMessage();
         });
     });
 
