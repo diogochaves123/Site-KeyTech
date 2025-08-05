@@ -107,36 +107,6 @@ O **KeyTech** é um site institucional moderno e dinâmico desenvolvido para apr
 
 > **💡 Dica:** Para uma demonstração completa, clone o repositório e abra o `index.html` em seu navegador.
 
-## ⚡ Como Executar
-
-### 📋 **Pré-requisitos**
-- Navegador web moderno (Chrome, Firefox, Safari, Edge)
-- Servidor web local (opcional, para desenvolvimento)
-
-### 🚀 **Instalação Rápida**
-
-1. **Clone o repositório**
-   ```bash
-   git clone https://github.com/seu-usuario/keytech-site.git
-   cd keytech-site
-   ```
-
-2. **Abra o projeto**
-   ```bash
-   # Opção 1: Abrir diretamente no navegador
-   open index.html
-   
-   # Opção 2: Usar servidor local (recomendado)
-   python -m http.server 8000
-   # ou
-   npx serve .
-   ```
-
-3. **Acesse no navegador**
-   ```
-   http://localhost:8000
-   ```
-
 ### 🔧 **Desenvolvimento**
 
 Para desenvolvimento local com live reload:
@@ -374,6 +344,6 @@ SOFTWARE.
 [![GitHub forks](https://img.shields.io/github/forks/seu-usuario/keytech-site?style=social)](https://github.com/seu-usuario/keytech-site/network)
 [![GitHub issues](https://img.shields.io/github/issues/seu-usuario/keytech-site)](https://github.com/seu-usuario/keytech-site/issues)
 
-**Desenvolvido com ❤️ pela KeyTech**
+**Desenvolvido com carinho pela KeyTech!**
 
 </div> 
