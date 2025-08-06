@@ -194,7 +194,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="message bot">
                 <p>Olá! 👋 Sou o assistente virtual da KeyTech. Como posso ajudar você hoje?</p>
                 <div class="chat-options">
-                    <button class="chat-option" data-service="orcamento">📋 Solicitar Orçamento</button>
+                    <button class="chat-option" data-service="orcamento">📋 Solicitar Orçamento Geral</button>
                     <button class="chat-option" data-service="desenvolvimento web">🌐 Desenvolvimento Web</button>
                     <button class="chat-option" data-service="aplicativos mobile">📱 Aplicativos Mobile</button>
                     <button class="chat-option" data-service="cloud computing">☁️ Cloud Computing</button>
@@ -227,6 +227,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 setTimeout(() => {
                     addMessage('Abrindo WhatsApp...', 'bot');
                     setTimeout(() => {
+                        // Para orçamento genérico, usa a mensagem padrão
                         openWhatsAppWithMessage();
                     }, 1000);
                 }, 1500);
@@ -237,7 +238,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Adiciona opções específicas do serviço
                 setTimeout(() => {
                     const optionsHTML = serviceInfo.options.map(option => 
-                        `<button class="chat-option" data-action="${option.toLowerCase()}">${option}</button>`
+                        `<button class="chat-option" data-action="${option.toLowerCase()}" data-service="${service}">${option}</button>`
                     ).join('');
                     
                     const optionsMessage = `
@@ -250,11 +251,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     chatMessages.insertAdjacentHTML('beforeend', optionsMessage);
                     
                     // Adiciona event listeners
-                    const newOptions = chatMessages.querySelectorAll('.chat-option');
+                    const newOptions = chatMessages.querySelectorAll('.chat-option[data-service]');
                     newOptions.forEach(option => {
                         option.addEventListener('click', function() {
                             const action = this.getAttribute('data-action');
-                            handleActionSelection(action, service);
+                            const selectedService = this.getAttribute('data-service');
+                            handleActionSelection(action, selectedService);
                         });
                     });
                 }, 1000);
@@ -272,7 +274,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 setTimeout(() => {
                     addMessage('Abrindo WhatsApp...', 'bot');
                     setTimeout(() => {
-                        openWhatsAppWithSpecialistMessage();
+                        openWhatsAppWithServiceSpecificMessage(service, action);
                     }, 1000);
                 }, 1500);
             } else {
@@ -280,7 +282,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 setTimeout(() => {
                     addMessage('Abrindo WhatsApp...', 'bot');
                     setTimeout(() => {
-                        openWhatsAppWithMessage();
+                        openWhatsAppWithServiceSpecificMessage(service, action);
                     }, 1000);
                 }, 1500);
             }
@@ -855,6 +857,50 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 16);
 
     window.addEventListener('scroll', debouncedScrollHandler);
+
+    // ===== FUNÇÃO PARA ABRIR WHATSAPP COM MENSAGEM ESPECÍFICA DE SERVIÇO =====
+    function openWhatsAppWithServiceSpecificMessage(service, action) {
+        const phoneNumber = KeyTechConfig.whatsapp.phone;
+        let message = KeyTechConfig.whatsapp.messages.greeting; // Mensagem padrão como fallback
+        
+        // Normaliza o nome do serviço e ação para busca
+        const normalizedService = service.toLowerCase();
+        const normalizedAction = action.toLowerCase();
+        
+        // Busca mensagem específica para o serviço e ação
+        if (KeyTechConfig.whatsapp.messages.services[normalizedService] && 
+            KeyTechConfig.whatsapp.messages.services[normalizedService][normalizedAction]) {
+            message = KeyTechConfig.whatsapp.messages.services[normalizedService][normalizedAction];
+        }
+        
+        console.log('Serviço:', service);
+        console.log('Ação:', action);
+        console.log('Mensagem específica:', message);
+        
+        // Codifica a mensagem para URL
+        const encodedMessage = encodeURIComponent(message);
+        const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+        
+        // URL simples (sem codificação) como fallback
+        const whatsappUrlSimple = `https://wa.me/${phoneNumber}?text=${message}`;
+        
+        console.log('WhatsApp URL (codificada):', whatsappUrl);
+        console.log('WhatsApp URL (simples):', whatsappUrlSimple);
+        
+        // Tenta abrir o WhatsApp
+        try {
+            window.open(whatsappUrlSimple, '_blank');
+        } catch (error) {
+            console.error('Erro com URL simples:', error);
+            try {
+                window.open(whatsappUrl, '_blank');
+            } catch (error2) {
+                console.error('Erro com URL codificada:', error2);
+                // Fallback: abre WhatsApp sem mensagem
+                window.open(`https://wa.me/${phoneNumber}`, '_blank');
+            }
+        }
+    }
 
     // ===== FUNÇÃO PARA ABRIR WHATSAPP COM MENSAGEM PERSONALIZADA =====
     function openWhatsAppWithMessage() {
