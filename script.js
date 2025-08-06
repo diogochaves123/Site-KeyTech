@@ -343,7 +343,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 1000);
         } else if (action === 'contact_info') {
             setTimeout(() => {
-                addMessage('📧 Email: keytech.suporte@gmail.com\n📞 WhatsApp: (54) 991407787\n📍 Soledade, RS', 'bot');
+                addMessage(`📧 Email: ${KeyTechConfig.contact.email}\n📞 WhatsApp: ${KeyTechConfig.contact.phone}\n📍 ${KeyTechConfig.contact.location}`, 'bot');
             }, 1000);
         } else if (action === 'about_info') {
             setTimeout(() => {
@@ -416,8 +416,10 @@ document.addEventListener('DOMContentLoaded', function() {
             submitBtn.disabled = true;
             
             try {
-                // Send to API
-                const response = await fetch('http://localhost:3000/api/contact', {
+                // Send to API using configuration
+                const apiUrl = getApiUrl('/api/contact');
+                
+                const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -868,8 +870,8 @@ document.addEventListener('DOMContentLoaded', function() {
             greeting = 'Boa noite, gostaria de solicitar um orcamento!';
         }
         
-        // Formato correto do número para WhatsApp (código do país + DDD + número)
-        const phoneNumber = '5554991407787'; // 55 (Brasil) + 54 (DDD) + 991407787
+        // Usa configuração do WhatsApp
+        const phoneNumber = KeyTechConfig.whatsapp.phone;
         
         // Alternativa: formato sem o código do país (pode funcionar em alguns casos)
         // const phoneNumber = '54991407787';
@@ -902,11 +904,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ===== FUNÇÃO ESPECÍFICA PARA "FALAR COM ESPECIALISTA" =====
     function openWhatsAppWithSpecialistMessage() {
-        // Formato correto do número para WhatsApp (código do país + DDD + número)
-        const phoneNumber = '5554991407787'; // 55 (Brasil) + 54 (DDD) + 991407787
+        // Usa configuração do WhatsApp
+        const phoneNumber = KeyTechConfig.whatsapp.phone;
         
         // Mensagem específica para "Falar com especialista"
-        const specialistMessage = 'Olá, queria falar com um especialista!';
+        const specialistMessage = KeyTechConfig.whatsapp.messages.specialist;
         
         // Codifica a mensagem corretamente para URL
         const message = encodeURIComponent(specialistMessage);
@@ -936,7 +938,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ===== FUNÇÃO DE TESTE PARA WHATSAPP =====
     function testWhatsApp() {
-        const phoneNumber = '5554991407787';
+        const phoneNumber = KeyTechConfig.whatsapp.phone;
         const message = 'Teste de mensagem';
         const encodedMessage = encodeURIComponent(message);
         const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
