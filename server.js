@@ -52,7 +52,7 @@ app.post('/api/contact', async (req, res) => {
         try {
             const { data, error } = await resend.emails.send({
                 from: 'onboarding@resend.dev',
-                to: ['keytech.suporte@gmail.com'],
+                to: ['diogo.24chaves@gmail.com'],
                 subject: `Nova mensagem de contato - ${name}`,
                 html: `
                     <h2>Nova Mensagem de Contato - KeyTech</h2>
