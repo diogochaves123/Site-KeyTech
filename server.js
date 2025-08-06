@@ -21,8 +21,8 @@ if (process.env.RESEND_API_KEY) {
     console.error('ERROR: RESEND_API_KEY not found in environment variables');
 }
 
-// Initialize Resend with the new API key
-const resend = new Resend('re_NEwXdFhk_5LVKXePhzD1oH2pYbwpQPe3A');
+// Initialize Resend with the API key
+const resend = new Resend(process.env.RESEND_API_KEY || 're_NEwXdFhk_5LVKXePhzD1oH2pYbwpQPe3A');
 
 // Contact form endpoint
 app.post('/api/contact', async (req, res) => {
