@@ -1,0 +1,12 @@
+{
+  "name": "keytech-netlify-functions",
+  "version": "1.0.0",
+  "description": "Funções serverless para o site KeyTech",
+  "main": "api.js",
+  "dependencies": {
+    "resend": "^2.0.0"
+  },
+  "engines": {
+    "node": "18.x"
+  }
+} 

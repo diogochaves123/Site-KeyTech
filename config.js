@@ -1,9 +1,7 @@
 // Configuração do ambiente
 const config = {
-    // URL da API - altere para sua URL de produção
-    apiUrl: window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-        ? 'http://localhost:3000' 
-        : window.location.origin,
+    // URL da API - usa a mesma origem do site
+    apiUrl: window.location.origin,
     
     // Configurações do WhatsApp
     whatsapp: {
